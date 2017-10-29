@@ -1,7 +1,7 @@
 ##################################################################################################
-# Downloading documents from:
+# Automatically Retrieve Documents of the Lithuanian Parliament
 # Seimas Transcript Homepage: http://www3.lrs.lt/pls/inter/w5_sale.kad_ses
-# Author: JP + RBS
+# Authors: JP + RBS (R Script), CM (Instructions for Manual Download)
 # Date: October 29, 2017
 ##################################################################################################
 
@@ -9,7 +9,7 @@
 library(rvest)			# if package is not already installed: install.packages("rvest")
 
 # Specify paths
-path.to.save.docs <- "" # please specify
+path.output <- "" # please specify
 
 # Extract the relevant higher level URLs
 ##################################################################################################
@@ -43,26 +43,19 @@ pdf.path
 pdf.file <- paste0("https://e-seimas.lrs.lt", pdf.path)
 
 # Download and save document
-download.file(pdf.file, destfile = paste0(path.to.save.docs, "test.pdf"))
+download.file(pdf.file, destfile = paste0(path.output, "test.pdf"))
 
 
 # Automate steps
 ##################################################################################################
 
-# Lists for Stenograma URLs and PDF paths
-all.url.stenograma <-NULL
-
-# Function to extract URLs (from level 2 URLs)
+# Function to extract Stenograma URLs (from higher level URLs)
 extract.url.stenograma <- function(x) {
 	url.stenograma <- read_html(x, encoding = "latin1") %>%
 	html_node(xpath = '//a[text()="Stenograma"]') %>%
 	html_attr("href")
 	return(url.stenograma)
 }
-
-# Extract all URLs	
-all.url.stenograma <- lapply(url.level2.list[1:10], extract.url.stenograma)
-all.url.stenograma
 
 # Function extract PDF path
 extract.pdf.path <- function(x) {
@@ -73,13 +66,21 @@ extract.pdf.path <- function(x) {
 	return(pdf.file)
 }
 
+# Empty lists to store Stenograma URLs and links to PDF files
+all.url.stenograma <-NULL
+all.pdf.files <- NULL
+
+# Extract all Stenograma URLs	
+all.url.stenograma <- lapply(url.level2.list[1:10], extract.url.stenograma)
+all.url.stenograma
+
 # Extract path to pdf files
 all.pdf.files <- lapply(all.url.stenograma, extract.pdf.path)
 all.pdf.files
 
-# Download and save document
+# Download and save documents
 for (i in 1:length(all.pdf.files)) {
-	download.file(all.pdf.files[[1]], destfile = paste0(path.to.save.docs, "filename", i, ".pdf"))	
+	download.file(all.pdf.files[[1]], destfile = paste0(path.output, "filename", i, ".pdf"))	
 }
 	
 
