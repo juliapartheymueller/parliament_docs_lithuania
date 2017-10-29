@@ -6,13 +6,13 @@
 ##################################################################################################
 
 # Load packages
-library(rvest)
+library(rvest)			# if package is not already installed: install.packages("rvest")
 
-# Download a test document
+# Specify paths
+path.to.save.docs <- "" # please specify
+
+# Extract the relevant higher level URLs
 ##################################################################################################
-
-# Extract the relevant URLs
-
 ## First level URLs (actually not needed because IDs on second level seem to be systematic)
 # url.level1.list <- NULL
 # for (i in 1:110) {
@@ -26,9 +26,11 @@ for (i in 500000:501187) {
 }
 url.level2.list 
 
-## URL of stenograma site
-url.overview <- url.level2.list[[2]]
-url.stenograma <- read_html(url.overview, encoding = "latin1") %>%
+# Download a test document
+##################################################################################################
+
+## URL of stenograma site (stenograma = protocols)
+url.stenograma <- read_html(url.level2.list[[1]], encoding = "latin1") %>%
   html_node(xpath = '//a[text()="Stenograma"]') %>%
   html_attr("href")
 url.stenograma
@@ -41,7 +43,7 @@ pdf.path
 pdf.file <- paste0("https://e-seimas.lrs.lt", pdf.path)
 
 # Download and save document
-download.file(pdf.file, destfile = paste0("/Users/partheym/Desktop/Downloaded_Documents/", "test.pdf"))
+download.file(pdf.file, destfile = paste0(path.to.save.docs, "test.pdf"))
 
 
 # Automate steps
@@ -77,7 +79,7 @@ all.pdf.files
 
 # Download and save document
 for (i in 1:length(all.pdf.files)) {
-	download.file(all.pdf.files[[1]], destfile = paste0("/Users/partheym/Desktop/Downloaded_Documents/", "filename", i, ".pdf"))	
+	download.file(all.pdf.files[[1]], destfile = paste0(path.to.save.docs, "filename", i, ".pdf"))	
 }
 	
 
